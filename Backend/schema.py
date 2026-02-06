@@ -14,6 +14,7 @@ class OutfitUpload(BaseModel):
     category:str
     color:str
     style:str
+    short_descripiton: str
 
 class AiSuggestion(BaseModel):
     ocassion:str
