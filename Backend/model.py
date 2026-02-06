@@ -20,5 +20,6 @@ class ClothingItem(Base):
     category = Column(String, nullable=False)
     color = Column(String, nullable=False)
     style = Column(String, nullable=False)
+    image_url = Column(String, nullable=False)
     short_descripiton = Column(String, nullable=False)
     user = relationship("User", back_populates="clothing_items")
