@@ -3,6 +3,7 @@ from model import User, ClothingItem
 from database import SessionLocal, Base, get_db
 from schema import UserCreate , UserLogin
 from password import hash_password, verify_password
+from jwt import create_access_token , decode_access_token
 app = FastAPI(title="Closet Mate")
 
 # create a new user
@@ -32,4 +33,10 @@ def login_user(user:UserLogin, db:SessionLocal = Depends(get_db)):
     if not verify_password:
         raise HTTPException(status_code=400, detail="Invalid Credintial")
 
-    return {"message":"User Login sucessfully", "userid": existing_user.id}
+    access_token = create_access_token(data={"user_id": existing_user.id, "email": existing_user.email})
+
+    return{
+        "message":"User Loged in sucessfully",
+        "user_id": existing_user.id,
+        "token": access_token
+    }
