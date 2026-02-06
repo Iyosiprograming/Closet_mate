@@ -9,7 +9,6 @@ class User(Base):
     username = Column(String, nullable=False)
     email = Column(String, unique=True, index=True)
     password = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
     clothing_items = relationship("ClothingItem", back_populates="user")
 
 # data model for the user clothes
