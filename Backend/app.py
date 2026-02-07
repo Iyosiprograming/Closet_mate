@@ -1,10 +1,11 @@
 import os
 import shutil
-from fastapi import FastAPI, HTTPException, Depends, Header, status, UploadFile, File
+import uuid
+from fastapi import FastAPI, HTTPException, Depends, Header, status, UploadFile, File , Form
 from sqlalchemy.orm import Session
 from model import User, ClothingItem
 from database import SessionLocal, get_db
-from schema import UserCreate, UserLogin, OutfitUpload, AiSuggestion
+from schema import UserCreate, UserLogin,  AiSuggestion
 from password import hash_password, verify_password
 from jwt import create_access_token, decode_access_token
 from gemini import get_gemini_response
@@ -83,7 +84,10 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
 # insert clothes
 @app.post("/upload")
 def upload_outfit(
-    outfit: OutfitUpload,
+    name: str = Form(...),
+    category: str = Form(...),
+    color: str = Form(...),
+    style: str = Form(...),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user)
@@ -92,27 +96,30 @@ def upload_outfit(
         if not file.filename.lower().endswith((".png", ".jpg", ".jpeg")):
             raise HTTPException(status_code=400, detail="File must be an image")
 
+        # Save file with UUID
         ext = os.path.splitext(file.filename)[1]
         image_filename = f"{user_id}_{uuid.uuid4().hex}{ext}"
         image_path = os.path.join(UPLOAD_FOLDER, image_filename)
-
         with open(image_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        short_desc = f"{outfit.name} - {outfit.color} {outfit.category} ({outfit.style})"
+        # Short description
+        short_desc = f"{name} - {color} {category} ({style})"
 
+        # Save to DB
         new_clothe = ClothingItem(
             user_id=user_id,
-            name=outfit.name,
-            category=outfit.category,
-            color=outfit.color,
-            style=outfit.style,
-            short_description=short_desc,
+            name=name,
+            category=category,
+            color=color,
+            style=style,
+            short_descripiton=short_desc,
             image_url=image_path
         )
         db.add(new_clothe)
         db.commit()
         db.refresh(new_clothe)
+
         return {"message": "Clothe added successfully", "id": new_clothe.id}
 
     except HTTPException:

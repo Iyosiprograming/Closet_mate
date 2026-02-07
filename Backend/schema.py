@@ -9,12 +9,5 @@ class UserLogin(BaseModel):
     email:EmailStr
     password:str
 
-class OutfitUpload(BaseModel):
-    name:Optional[str]
-    category:str
-    color:str
-    style:str
-    short_descripiton: str
-
 class AiSuggestion(BaseModel):
     ocassion:str
