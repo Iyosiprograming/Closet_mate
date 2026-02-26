@@ -9,3 +9,4 @@ class User(Base):
     email = Column(String,nullable=False,unique=True)
     password = Column(String,nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    clothes = relationship("Clothe", back_populates="user")
