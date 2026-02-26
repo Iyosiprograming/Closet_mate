@@ -2,7 +2,7 @@ from fastapi import HTTPException, status, Response,Cookie
 from sqlalchemy.orm import Session
 from Models.clothe_model import Clothe
 from Models.user_model import User
-from Schema.clothe_schema import AddClothe, AddClotheResponse,DeleteClotheResponse
+from Schema.clothe_schema import AddClothe, AddClotheResponse,DeleteClotheResponse,GetClotheResponse
 from Services.jwt import decode_access_token
 
 def add_clothe(clothe: AddClothe, db: Session,access_token: str | None = Cookie(default=None)):
@@ -77,3 +77,32 @@ def delete_clothe(clothe_id: int, db: Session,access_token: str | None = Cookie(
         message = "deleted succesfully"
     )
         
+def get_all_clothe(db: Session,access_token: str | None = Cookie(default=None))->list[GetClotheResponse]:
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    payload = decode_access_token(access_token)
+    email = payload.get("sub")
+
+    if not email:
+        raise HTTPException(status_code=401, detail="Invalid token payload")
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    clothes = db.query(Clothe).filter(Clothe.user_id == user.id).all()
+    
+    return [
+            GetClotheResponse(
+                id=c.id,
+                name=c.name,
+                category=c.category,
+                color=c.color,
+                size=c.size,
+                kind=c.kind,
+                image_url=c.image_url,
+                created_at=c.created_at
+            )
+            for c in clothes
+        ]
