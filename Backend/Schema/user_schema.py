@@ -13,3 +13,9 @@ class UserCreateResponse(BaseModel):
 model_config = {
         "from_attributes": True
     }
+
+class UserLogin(UserCreate):
+    pass
+
+class UserLoginResponse(UserCreateResponse):
+    pass
