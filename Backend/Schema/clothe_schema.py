@@ -23,3 +23,14 @@ class AddClotheResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class DeleteClotheResponse(BaseModel):
+    clothe_id: int
+    name: str
+    category: str
+    color: str
+    size: str
+    kind: str
+    image_url: str
+    created_at: datetime
+    message: str
