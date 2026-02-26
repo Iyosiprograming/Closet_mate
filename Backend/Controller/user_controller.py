@@ -1,9 +1,9 @@
-from fastapi import HTTPException, status, Response
+from fastapi import HTTPException, status, Response,Cookie
 from sqlalchemy.orm import Session
 from Models.user_model import User
-from Schema.user_schema import UserCreate, UserCreateResponse, UserLogin, UserLoginResponse
+from Schema.user_schema import UserCreate, UserCreateResponse, UserLogin, UserLoginResponse, MeResponse
 from Services.password import hash_password, verify_password
-from Services.jwt import create_access_token
+from Services.jwt import create_access_token, decode_access_token, verify_access_token
 
 def create_user(user: UserCreate, db: Session):
 
@@ -52,4 +52,35 @@ def login_user(user:UserLogin, response: Response, db: Session):
         email=existing_user.email,
         created_at = existing_user.created_at,
         message = "User logged in successfully"
+    )
+
+
+def me_user(
+    db: Session,
+    access_token: str | None = Cookie(default=None)
+):
+    if not access_token:
+        raise HTTPException(
+            status_code=401,
+            detail="Not authenticated"
+        )
+
+    payload = decode_access_token(access_token)
+    email = payload.get("sub")
+
+    if not email:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token payload"
+        )
+
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return MeResponse(
+        id=user.id,
+        email=user.email,
+        created_at=user.created_at,
+        message="User fetched successfully"
     )

@@ -19,3 +19,7 @@ class UserLogin(UserCreate):
 
 class UserLoginResponse(UserCreateResponse):
     pass
+
+class MeResponse(UserCreateResponse):
+    pass
+    
