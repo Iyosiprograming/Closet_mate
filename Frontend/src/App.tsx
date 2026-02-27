@@ -1,8 +1,14 @@
 import { CreatePage } from "./Pages/CreatePage"
+import { LoginPage } from "./Pages/LoginPage"
+import {Routes,Route} from "react-router-dom"
 function App() {
   return (
     <div>
-      <CreatePage />
+      <Routes>
+        <Route path="/create" element={<CreatePage/>}></Route>
+        <Route path="/login" element={<LoginPage/>}></Route>
+      </Routes>
+
     </div>
   )
 }
