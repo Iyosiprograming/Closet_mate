@@ -5,13 +5,13 @@ class CreateUser(BaseModel):
     password: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CreateUserResponse(BaseModel):
     detail: dict
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class LoginUser(CreateUser):
     pass

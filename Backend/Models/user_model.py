@@ -1,3 +1,4 @@
+import uuid
 from sqlalchemy import Column, String, UUID, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -10,4 +11,4 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
-    clothes = relationship("Clothes", back_populates="user")
+    clothes = relationship("Clothe", back_populates="user") 
