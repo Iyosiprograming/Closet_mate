@@ -14,5 +14,6 @@ class Clothe(Base):
     category = Column(String, nullable=False)
     description = Column(String, nullable=True)
     image_url = Column(String, nullable=False)
+    short_description = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     user = relationship("User", back_populates="clothes")

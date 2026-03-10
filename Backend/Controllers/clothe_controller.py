@@ -2,16 +2,18 @@ import uuid
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from Models.clothe_model import Clothe
-from Schema.clothe_schema import AddClothe, AddClotheResponse, AllClotheResponse
-
+from Models.user_model import User
+from Schema.clothe_schema import AddClothe, AddClotheResponse, AllClotheResponse,AiSuggestion,AiSuggestionResponse
+from Services.ai_suggestion import get_suggestion
 
 def add_clothe(clothe: AddClothe, user_id: uuid.UUID, db: Session):
-
+    short_description = f"{clothe.name}, {clothe.color}, {clothe.category},{clothe.description}"
     new_clothe = Clothe(
         name=clothe.name,
         color=clothe.color,
         category=clothe.category,
         description=clothe.description,
+        short_description = short_description,
         image_url=clothe.image_url,
         user_id=uuid.UUID(user_id)
     )
@@ -63,4 +65,39 @@ def get_all_clothe(user_id: uuid.UUID, db: Session):
         message="Clothes fetched successfully",
         detail={},
         clothes=clothes_list
+    )
+
+
+
+async def suggestion(clothe: AiSuggestion, user_id: str, db: Session):
+    user_id = uuid.UUID(user_id)
+
+    existing_user = db.query(User).filter(User.id == user_id).first()
+    if not existing_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    existing_clothe = db.query(Clothe.short_description).filter(
+        Clothe.user_id == user_id
+    ).first()
+
+    if not existing_clothe:
+        raise HTTPException(status_code=404, detail="Clothe not found")
+
+    short_description = existing_clothe[0]
+
+    prompt = f"""
+    Give me an outfit idea.
+
+    Occasion: {clothe.user_prompt}
+
+    My closet:
+    {short_description}
+    """
+
+    result = await get_suggestion(prompt)
+
+    return AiSuggestionResponse(
+        status_code=200,
+        message="Suggestion fetched successfully",
+        detail=result
     )
