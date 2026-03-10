@@ -24,11 +24,11 @@ def register_user(user: CreateUser, db: Session) -> CreateUserResponse:
     db.refresh(new_user)
     
     return CreateUserResponse(
+        status_code = status.HTTP_201_CREATED,
+        message = "User created successfully",
         detail={
             "user_id": new_user.id,
             "email": new_user.email,
-            "status_code": status.HTTP_201_CREATED,
-            "message": "User created successfully"
         }
     )
 
@@ -49,11 +49,11 @@ def login_user(user:LoginUser, response:Response, db:Session):
         samesite="lax"
     )
     return LoginUserResponse(
+        status_code = status.HTTP_200_OK,
+        message = "User logged in successfully",
         detail={
             "user_id": str(existing_user.id),
             "email": existing_user.email,
-            "status_code": status.HTTP_200_OK,
-            "message": "User logged in successfully"
         }
     )
 
@@ -64,10 +64,11 @@ def me(user_id:str,db: Session):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     
     return MeResponse(
+        status_code = status.HTTP_200_OK,
+        message = "User fetched successfully",
         detail={
             "user_id":existing_user.id,
             "email":existing_user.email,
-            "status_code":status.HTTP_200_OK,
             "created_at":existing_user.created_at
         }
     )

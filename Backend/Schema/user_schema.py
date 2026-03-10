@@ -8,6 +8,8 @@ class CreateUser(BaseModel):
         from_attributes = True
 
 class CreateUserResponse(BaseModel):
+    status_code: int
+    message: str
     detail: dict
 
     class Config:
