@@ -24,11 +24,11 @@ def register_user(user: CreateUser, db: Session) -> CreateUserResponse:
     db.refresh(new_user)
     
     return CreateUserResponse(
+        status_code=status.HTTP_201_CREATED,
+        message="User created successfully",
         detail={
             "user_id": new_user.id,
             "email": new_user.email,
-            "status_code": status.HTTP_201_CREATED,
-            "message": "User created successfully"
         }
     )
 
