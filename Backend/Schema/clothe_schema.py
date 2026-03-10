@@ -17,3 +17,11 @@ class AddClotheResponse(BaseModel):
 
 class AllClotheResponse(AddClotheResponse):
     clothes: List[AddClothe]
+
+class AiSuggestion(BaseModel):
+    user_prompt: str
+
+class AiSuggestionResponse(BaseModel):
+    status_code: int
+    message: str
+    detail: dict

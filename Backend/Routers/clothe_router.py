@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends,Response, status
-from Controllers.clothe_controller import add_clothe,get_all_clothe
-from Schema.clothe_schema import AddClothe, AddClotheResponse, AllClotheResponse
+from Controllers.clothe_controller import add_clothe,get_all_clothe,suggestion
+from Schema.clothe_schema import AddClothe, AddClotheResponse, AllClotheResponse,AiSuggestion,AiSuggestionResponse
 from Services.jwt import get_current_user
 from database import get_db
 from sqlalchemy.orm import Session
@@ -14,3 +14,7 @@ def add_clothe_endpoint(clothe: AddClothe, user_id: str = Depends(get_current_us
 @router.get("/", response_model=AllClotheResponse, status_code=status.HTTP_200_OK)
 def get_all_clothe_endpoint(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     return get_all_clothe(user_id, db)
+
+@router.post("/suggestion",response_model=AiSuggestionResponse,status_code=status.HTTP_200_OK)
+async def ai_suggestion_endpoint(clothe: AiSuggestion, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    return await suggestion(clothe, user_id, db)
