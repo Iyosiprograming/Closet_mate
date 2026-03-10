@@ -11,7 +11,7 @@ class Clothe(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     name = Column(String, nullable=True)
     color = Column(String, nullable=False)
-    Kind = Column(String, nullable=False)
+    category = Column(String, nullable=False)
     description = Column(String, nullable=True)
     image_url = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
