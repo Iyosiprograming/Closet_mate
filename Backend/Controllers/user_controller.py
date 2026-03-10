@@ -1,9 +1,10 @@
+import uuid
 from fastapi import HTTPException, status, Cookie, Response
 from sqlalchemy.orm import Session
 from Models.user_model import User
 from Services.password import hashPassword, verifyhashPassword
 from Services.jwt import create_access_token, verify_token
-from Schema.user_schema import CreateUser, CreateUserResponse,LoginUser,LoginUserResponse
+from Schema.user_schema import CreateUser, CreateUserResponse,LoginUser,LoginUserResponse,MeResponse
 
 def register_user(user: CreateUser, db: Session) -> CreateUserResponse:
     existing_user = db.query(User).filter(User.email == user.email).first()
@@ -53,5 +54,20 @@ def login_user(user:LoginUser, response:Response, db:Session):
             "email": existing_user.email,
             "status_code": status.HTTP_200_OK,
             "message": "User logged in successfully"
+        }
+    )
+
+def me(user_id:str,db: Session):
+    user_uuid = uuid.UUID(user_id)
+    existing_user = db.query(User).filter(User.id == user_uuid).first()
+    if not existing_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    
+    return MeResponse(
+        detail={
+            "user_id":existing_user.id,
+            "email":existing_user.email,
+            "status_code":status.HTTP_200_OK,
+            "created_at":existing_user.created_at
         }
     )

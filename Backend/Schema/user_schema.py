@@ -18,3 +18,6 @@ class LoginUser(CreateUser):
 
 class LoginUserResponse(CreateUserResponse):
     pass
+
+class MeResponse(CreateUserResponse):
+    pass
